@@ -1,0 +1,38 @@
+Load Balancer
+Whenever a user sends a request, it first hits our trusty Load Balancer. The Load Balancer’s job is to evenly distribute incoming network traffic across multiple servers to ensure no single server gets overwhelmed. Imagine it as a bouncer at a club, making sure everyone gets a chance to dance.
+
+API Gateway
+Next stop on our journey is the API Gateway. It’s like the receptionist of our system, directing requests to the appropriate services. It handles routing, rate limiting, and can even modify requests or responses if needed.
+
+Message Queue
+Our Message Queue (Kafka) is like the postal service of our architecture. It allows our microservices to communicate with each other in a reliable, asynchronous manner. This comes in handy when dealing with operations that can be processed in the background.
+
+Database
+Every system needs a reliable memory, and that’s what our Database is. We use a relational database (like PostgreSQL) to store structured data like user information, transactions, etc. We also use a NoSQL database (like Cassandra) to store unstructured data or data that needs to be written or read at a high speed.
+
+Cache
+Nobody likes waiting, right? That’s why we use a Cache. It stores some data temporarily so that future requests for that data can be served faster. We usually cache data that is frequently accessed, improving our system’s overall speed and performance.
+
+External APIs
+Last but not least, we have External APIs. These are third-party services that provide additional functionality like sending emails or SMS, performing KYC checks, etc.
+
+Microservices in Kubernetes Cluster
+The heart of our system, the place where all the magic happens — the Kubernetes Cluster. Our microservices live here, each in its own little world, handling its own specific tasks. Some of the core microservices include:
+
+Payment Microservice
+The Payment Microservice handles the core functionality of our digital wallet. It takes care of processing payments and ensuring that transactions go smoothly.
+
+Authentication Microservice
+Every system needs a gatekeeper, and that’s what our Authentication Microservice does. It ensures that users are who they say they are and keeps unauthorized users out
+
+Settlement Microservice
+The Settlement Microservice is the mediator between different parties involved in a transaction. It ensures that payments are correctly settled between parties.
+
+Fraud Detection Microservice
+The Fraud Detection Microservice is the detective of our system. It monitors transactions and activities for any signs of fraudulent behavior.
+
+Dispute Resolution Microservice
+Whenever there’s a disagreement or conflict over a transaction, the Dispute Resolution Microservice steps in to resolve it.
+
+Customer Service Microservice
+The Customer Service Microservice is all about user experience. It provides assistance to users and helps them navigate through the system.
