@@ -1,0 +1,142 @@
+openapi: 3.0.0
+info:
+  title: API Gateway
+  description: API Gateway for Ewallet System
+  version: 1.0.0
+servers:
+  - url: "http://localhost:8080/wallet/api"
+    description: Endpoint for all external request to our wallet system
+tags:
+  - name: user
+    description: System operations for user
+  - name: wallet
+    description: System operation for wallet
+  - name: payment
+    description: System operation for payment
+  - name: authentication
+    description: System operation for authentication
+  - name: dispute
+    description: System operation for dispute
+components:
+  schemas:
+    sch_status_error:
+      type: object
+      properties:
+        status_code:
+          type: string
+        error_desc:
+          type: string
+    sch_response_status:
+      type: object
+      properties:
+        code:
+          type: string
+        code_desc:
+          type: string
+        text_disp:
+          type: string
+  parameters:
+    param_device_id:
+      name: device_id
+      in: path
+      required: true
+      description: unique identify of device
+      schema:
+        type: string
+    param_otp_id:
+      name: otp_id
+      in: path
+      required: true
+      description: otp id for verify otp from user
+      schema:
+        type: string
+  requestBodies:
+    body_otp_verify:
+      description: body for verify otp
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              otp:
+                type: string
+    body_signup:
+      description: body for signup
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              mobile:
+                type: string
+              password:
+                type: string
+  responses:
+    response_status_error:
+      description: http status error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/sch_status_error"
+    response_signup:
+      description: response for signup
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: "#/components/schemas/sch_response_status"
+              data:
+                type: object
+                properties:
+                  otp_id:
+                    type: string
+    response_verify_otp:
+      description: reponse for request verify otp
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: "#/components/schemas/sch_response_status"
+paths:
+  /v1/devices/{device_id}/signup:
+    parameters:
+      - $ref: "#/components/parameters/param_device_id"
+    post:
+      tags:
+        - user
+      summary: Create a wallet
+      requestBody:
+        $ref: "#/components/requestBodies/body_signup"
+      responses:
+        default:
+          $ref: "#/components/responses/response_status_error"
+        200:
+          $ref: "#/components/responses/response_signup"
+  /v1/devices/{device_id}/signup/otp/{otp_id}:
+    parameters:
+      - $ref: "#/components/parameters/param_device_id"
+      - $ref: "#/components/parameters/param_otp_id"
+    post:
+      tags:
+        - user
+      summary: Verify otp signup
+      requestBody:
+        $ref: "#/components/requestBodies/body_otp_verify"
+      responses:
+        default:
+          $ref: "#/components/responses/response_status_error"
+        200:
+          $ref: "#/components/responses/response_verify_otp"
+
+
+
+
+
+
+
