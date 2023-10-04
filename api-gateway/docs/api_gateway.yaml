@@ -35,6 +35,30 @@ components:
           type: string
         text_disp:
           type: string
+    sch_token:
+      type: object
+      properties:
+        token:
+          type: string
+        refresh_token:
+          type: string
+    sch_user_info:
+      type: object
+      properties:
+        id:
+          type: string
+        mobile:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        isKyc:
+          type: boolean
+        hasLink:
+          type: boolean
+        role:
+          type: string
   parameters:
     param_device_id:
       name: device_id
@@ -48,6 +72,13 @@ components:
       in: path
       required: true
       description: otp id for verify otp from user
+      schema:
+        type: string
+    param_user_id:
+      name: user_id
+      in: path
+      required: true
+      description: user id
       schema:
         type: string
   requestBodies:
@@ -72,6 +103,40 @@ components:
               mobile:
                 type: string
               password:
+                type: string
+    body_signin:
+      description: body for signin
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              mobile:
+                type: string
+              password:
+                type: string
+    body_update_profile:
+      description: body for profile
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              full_name:
+                type: string
+              email:
+                type: string
+              dob:
+                type: string
+              address:
+                type: string
+              origin_address:
+                type: string
+              national_id:
+                type: string
+              nation:
                 type: string
   responses:
     response_status_error:
@@ -103,6 +168,31 @@ components:
             properties:
               status:
                 $ref: "#/components/schemas/sch_response_status"
+    response_signin:
+      description: response for signin request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: "#/components/schemas/sch_response_status"
+              data:
+                type: object
+                properties:
+                  tokens:
+                    $ref: "#/components/schemas/sch_token"
+                  user_info:
+                    $ref: "#/components/schemas/sch_user_info"
+    response_update_profile:
+      description: response for update profile request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: "#/components/schemas/sch_response_status"
 paths:
   /v1/devices/{device_id}/signup:
     parameters:
@@ -110,7 +200,7 @@ paths:
     post:
       tags:
         - user
-      summary: Create a wallet
+      summary: create a wallet
       requestBody:
         $ref: "#/components/requestBodies/body_signup"
       responses:
@@ -125,7 +215,7 @@ paths:
     post:
       tags:
         - user
-      summary: Verify otp signup
+      summary: verify otp signup
       requestBody:
         $ref: "#/components/requestBodies/body_otp_verify"
       responses:
@@ -133,6 +223,38 @@ paths:
           $ref: "#/components/responses/response_status_error"
         200:
           $ref: "#/components/responses/response_verify_otp"
+  /v1/devices/{device_id}/signin:
+    parameters:
+      - $ref: "#/components/parameters/param_device_id"
+    post:
+      tags:
+        - user
+      summary: sign in
+      requestBody:
+        $ref: "#/components/requestBodies/body_signin"
+      responses:
+        default:
+          $ref: "#/components/responses/response_status_error"
+        200:
+          $ref: "#/components/responses/response_signin"
+  /v1/devices/{device_id}/user/{user_id}/update_profile:
+    parameters:
+      - $ref: "#/components/parameters/param_device_id"
+      - $ref: "#/components/parameters/param_user_id"
+    post:
+      tags:
+        - user
+      summary: update user profile
+      requestBody:
+        $ref: "#/components/requestBodies/body_update_profile"
+      responses:
+        default:
+          $ref: "#/components/responses/response_status_error"
+        200:
+          $ref: "#/components/responses/response_update_profile"
+
+
+
 
 
 
