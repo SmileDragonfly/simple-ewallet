@@ -1,7 +1,11 @@
 openapi: 3.0.0
 info:
   title: API Gateway
-  description: API Gateway for Ewallet System
+  description: | 
+    - 1.0.0: API Gateway for Ewallet System Initial Version
+      + User: Signup, login, logout, update profile, get profile, change password, reset password, link, link-confirm, unlink, get links, get wallets, get wallet detail
+      + Wallet: topup, withdraw, transferp2p, get transaction history, get transaction detail
+      + Authentication: refresh token
   version: 1.0.0
 servers:
   - url: "http://localhost:8080/wallet/api"
@@ -11,12 +15,8 @@ tags:
     description: System operations for user
   - name: wallet
     description: System operation for wallet
-  - name: payment
-    description: System operation for payment
   - name: authentication
     description: System operation for authentication
-  - name: dispute
-    description: System operation for dispute
 components:
   schemas:
     sch_status_error:
@@ -59,6 +59,48 @@ components:
           type: boolean
         role:
           type: string
+    sch_user_profile:
+      type: object
+      properties:
+        full_name:
+          type: string
+        email:
+          type: string
+        dob:
+          type: string
+        address:
+          type: string
+        origin_address:
+          type: string
+        national_id:
+          type: string
+        nation:
+          type: string
+    sch_wallet:
+      type: object
+      properties:
+        id:
+          type: string
+        balance:
+          type: integer
+        wallet_type:
+          type: string
+    sch_link:
+      type: object
+      properties:
+        bank_code:
+          type: string
+        link_info:
+          type: object
+          properties:
+            source_no:
+              type: string
+            source_type:
+              type: string
+            expire_date:
+              type: string
+            national_id:
+              type: string
   parameters:
     param_device_id:
       name: device_id
@@ -122,21 +164,18 @@ components:
       content:
         application/json:
           schema:
+            $ref: "#/components/schemas/sch_user_profile"
+    body_change_password:
+      description: body for changing user password
+      required: true
+      content:
+        application/json:
+          schema:
             type: object
             properties:
-              full_name:
+              password:
                 type: string
-              email:
-                type: string
-              dob:
-                type: string
-              address:
-                type: string
-              origin_address:
-                type: string
-              national_id:
-                type: string
-              nation:
+              new_password:
                 type: string
   responses:
     response_status_error:
@@ -184,7 +223,7 @@ components:
                     $ref: "#/components/schemas/sch_token"
                   user_info:
                     $ref: "#/components/schemas/sch_user_info"
-    response_update_profile:
+    response_status_only:
       description: response for update profile request
       content:
         application/json:
@@ -193,6 +232,42 @@ components:
             properties:
               status:
                 $ref: "#/components/schemas/sch_response_status"
+    response_get_profile:
+      description: response for get user profile request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: "#/components/schemas/sch_response_status"
+              data:
+                type: object
+                properties:
+                  profile:
+                    type: object
+                    $ref: "#/components/schemas/sch_user_profile"
+    response_get_wallet:
+      description: reponse for get user wallets
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: "#/components/schemas/sch_response_status"
+              data:
+                type: object
+                properties:
+                  wallets:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/sch_wallet"
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
 paths:
   /v1/devices/{device_id}/signup:
     parameters:
@@ -245,13 +320,64 @@ paths:
       tags:
         - user
       summary: update user profile
+      security:
+        - bearerAuth: []
       requestBody:
         $ref: "#/components/requestBodies/body_update_profile"
       responses:
         default:
           $ref: "#/components/responses/response_status_error"
         200:
-          $ref: "#/components/responses/response_update_profile"
+          $ref: "#/components/responses/response_status_only"
+  /v1/devices/{device_id}/user/{user_id}/get_profile:
+    parameters:
+      - $ref: "#/components/parameters/param_device_id"
+      - $ref: "#/components/parameters/param_user_id"
+    get:
+      tags:
+        - user
+      summary: get user profile
+      security:
+        - bearerAuth: []
+      responses:
+        default:
+          $ref: "#/components/responses/response_status_error"
+        200:
+          $ref: "#/components/responses/response_get_profile"
+  /v1/devices/{device_id}/user/{user_id}/change_password:
+    parameters:
+      - $ref: "#/components/parameters/param_device_id"
+      - $ref: "#/components/parameters/param_user_id"
+    patch:
+      tags:
+        - user
+      summary: change user password
+      security:
+        - bearerAuth: []
+      responses:
+        default:
+          $ref: "#/components/responses/response_status_error"
+        200:
+          $ref: "#/components/responses/response_status_only"
+      requestBody:
+        $ref: "#/components/requestBodies/body_change_password"
+  /v1/devices/{device_id}/user/{user_id}/wallets:
+    parameters:
+      - $ref: "#/components/parameters/param_device_id"
+      - $ref: "#/components/parameters/param_user_id"
+    get:
+      tags:
+        - user
+      summary: get wallets of user
+      security:
+        - bearerAuth: [ ]
+      responses:
+        default:
+          $ref: "#/components/responses/response_status_error"
+        200:
+          $ref: "#/components/responses/response_get_wallet"
+
+
 
 
 
