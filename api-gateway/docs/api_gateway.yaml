@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: API Gateway
-  description: | 
+  description: |
     - 1.0.0: API Gateway for Ewallet System Initial Version
       + User: Signup, login, logout, update profile, get profile, change password, reset password, link, link-confirm, unlink, get links, get wallets, get wallet detail
       + Wallet: topup, withdraw, transferp2p, get transaction history, get transaction detail
@@ -177,6 +177,13 @@ components:
                 type: string
               new_password:
                 type: string
+    body_link:
+      description: body for link operation
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/sch_link"
   responses:
     response_status_error:
       description: http status error
@@ -245,7 +252,6 @@ components:
                 type: object
                 properties:
                   profile:
-                    type: object
                     $ref: "#/components/schemas/sch_user_profile"
     response_get_wallet:
       description: reponse for get user wallets
@@ -263,6 +269,24 @@ components:
                     type: array
                     items:
                       $ref: "#/components/schemas/sch_wallet"
+    response_link:
+      description: response for request link
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: "#/components/schemas/sch_response_status"
+              data:
+                type: object
+                properties:
+                  link_id:
+                    type: string
+                  confirm_url:
+                    type: string
+                  confirm_otp_id:
+                    type: string
   securitySchemes:
     bearerAuth:
       type: http
@@ -376,6 +400,40 @@ paths:
           $ref: "#/components/responses/response_status_error"
         200:
           $ref: "#/components/responses/response_get_wallet"
+  /v1/devices/{device_id}/user/{user_id}/link:
+    parameters:
+      - $ref: "#/components/parameters/param_user_id"
+      - $ref: "#/components/parameters/param_device_id"
+    post:
+      tags:
+        - user
+      summary: create link bank card/account to user
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/body_link"
+      responses:
+        default:
+          $ref: "#/components/responses/response_status_error"
+        200:
+          $ref: "#/components/responses/response_link"
+  /v1/devices/{device_id}/user/{user_id}/link/{link_id}/confirm:
+    parameters:
+      - $ref: "#/components/parameters/param_device_id"
+      - $ref: "#/components/parameters/param_user_id"
+    post:
+      tags:
+        - user
+      summary: verify otp for link
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/body_otp_verify"
+      responses:
+        default:
+          $ref: "#/components/responses/response_status_error"
+        200:
+          $ref: "#/components/responses/response_status_only"
 
 
 
